@@ -1,0 +1,439 @@
+"use client"
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+interface Qualification {
+certificate_obtained: string;
+awarding_body: string;
+duration: string;
+training_center: string;
+course_study: string;
+}
+
+interface Document {
+document_type: string;
+file: File | null;
+}
+
+interface PractitionerInput {
+first_name: string;
+surname: string;
+age: number;
+date_of_birth: string;
+gender: string;
+state: string;
+lga: string;
+nationality: string;
+nin_number: string;
+email: string;
+phone_number: string;
+residential_address: string;
+clinic_name: string;
+clinic_state: string;
+clinic_lga: string;
+clinic_address: string;
+clinic_phone: string;
+staff_count: string;
+certificate_issue_date: string;
+years_of_practice: number;
+focus_description: string;
+practice_place: string;
+area_of_interest: string;
+highest_qualification: string;
+course_of_study: string;
+witness_name: string;
+witness_age: number;
+witness_nin: string;
+witness_phone: string;
+witness_signature: File | null;
+witness_date: string;
+payment_proof: File | null;
+qualifications: Qualification[];
+documents: Document[];
+}
+
+const PractitionerForm: React.FC<{ onCreate: () => void }> = ({ onCreate }) => {
+const [form, setForm] = useState<PractitionerInput>({
+    first_name: "",
+    surname: "",
+    age: 0,
+    date_of_birth: "",
+    gender: "",
+    state: "",
+    lga: "",
+    nationality: "",
+    nin_number: "",
+    email: "",
+    phone_number: "",
+    residential_address: "",
+    clinic_name: "",
+    clinic_state: "",
+    clinic_lga: "",
+    clinic_address: "",
+    clinic_phone: "",
+    staff_count: "",
+    certificate_issue_date: "",
+    years_of_practice: 0,
+    focus_description: "",
+    practice_place: "",
+    area_of_interest: "",
+    highest_qualification: "",
+    course_of_study: "",
+    witness_name: "",
+    witness_age: 0,
+    witness_nin: "",
+    witness_phone: "",
+    witness_signature: null,
+    witness_date: "",
+    payment_proof: null,
+    qualifications: [],
+    documents: []
+});
+
+const [qualification, setQualification] = useState<Qualification>({
+    certificate_obtained: "",
+    awarding_body: "",
+    duration: "",
+    training_center: "",
+    course_study: ""
+});
+
+const [document, setDocument] = useState<Document>({
+    document_type: "",
+    file: null
+});
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+};
+
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, files } = e.target;
+    if (files && files[0]) {
+    setForm(prev => ({ ...prev, [name]: files[0] }));
+    }
+};
+
+const handleQualificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setQualification(prev => ({ ...prev, [name]: value }));
+};
+
+const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, files } = e.target;
+    if (name === "file" && files) {
+    setDocument(prev => ({ ...prev, file: files[0] }));
+    } else {
+    setDocument(prev => ({ ...prev, [name]: value }));
+    }
+};
+
+const addQualification = () => {
+    if (qualification.certificate_obtained && qualification.awarding_body) {
+    setForm(prev => ({
+        ...prev,
+        qualifications: [...prev.qualifications, qualification]
+    }));
+    setQualification({
+        certificate_obtained: "",
+        awarding_body: "",
+        duration: "",
+        training_center: "",
+        course_study: ""
+    });
+    }
+};
+
+const addDocument = () => {
+    if (document.document_type && document.file) {
+    setForm(prev => ({
+        ...prev,
+        documents: [...prev.documents, document]
+    }));
+    setDocument({
+        document_type: "",
+        file: null
+    });
+    }
+};
+
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+    const formData = new FormData();
+    
+    // Append all form fields
+    Object.entries(form).forEach(([key, value]) => {
+        if (key === 'qualifications' || key === 'documents') {
+        formData.append(key, JSON.stringify(value));
+        } else if (value instanceof File) {
+        formData.append(key, value);
+        } else if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
+        }
+    });
+
+    await axios.post("http://localhost:8000/practitioners/", formData, {
+        headers: {
+        'Content-Type': 'multipart/form-data'
+        }
+    });
+    alert("Practitioner created successfully");
+    onCreate();
+    } catch (err) {
+    console.error(err);
+    alert("Failed to create practitioner");
+    }
+};
+
+return (
+    <div className="mb-6 p-6 bg-white rounded-lg shadow-md">
+    <h2 className="text-xl font-bold mb-4">Create Practitioner</h2>
+    <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Personal Information */}
+        <div className="space-y-2">
+            <h3 className="font-semibold text-gray-700">Personal Information</h3>
+            <input
+            name="first_name"
+            value={form.first_name}
+            onChange={handleChange}
+            placeholder="First Name"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            name="surname"
+            value={form.surname}
+            onChange={handleChange}
+            placeholder="Surname"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="Email"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            name="phone_number"
+            value={form.phone_number}
+            onChange={handleChange}
+            placeholder="Phone Number"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            name="nin_number"
+            value={form.nin_number}
+            onChange={handleChange}
+            placeholder="NIN Number"
+            className="w-full p-2 border rounded"
+            required
+            />
+        </div>
+
+        {/* Clinic Information */}
+        <div className="space-y-2">
+            <h3 className="font-semibold text-gray-700">Clinic Information</h3>
+            <input
+            name="clinic_name"
+            value={form.clinic_name}
+            onChange={handleChange}
+            placeholder="Clinic Name"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            name="clinic_phone"
+            value={form.clinic_phone}
+            onChange={handleChange}
+            placeholder="Clinic Phone"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            name="years_of_practice"
+            type="number"
+            value={form.years_of_practice}
+            onChange={handleChange}
+            placeholder="Years of Practice"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            name="area_of_interest"
+            value={form.area_of_interest}
+            onChange={handleChange}
+            placeholder="Area of Interest"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            name="highest_qualification"
+            value={form.highest_qualification}
+            onChange={handleChange}
+            placeholder="Highest Qualification"
+            className="w-full p-2 border rounded"
+            required
+            />
+        </div>
+        </div>
+
+        {/* Qualifications */}
+        <div className="space-y-2">
+        <h3 className="font-semibold text-gray-700">Professional Qualifications</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+            name="certificate_obtained"
+            value={qualification.certificate_obtained}
+            onChange={handleQualificationChange}
+            placeholder="Certificate Obtained"
+            className="p-2 border rounded"
+            />
+            <input
+            name="awarding_body"
+            value={qualification.awarding_body}
+            onChange={handleQualificationChange}
+            placeholder="Awarding Body"
+            className="p-2 border rounded"
+            />
+            <input
+            name="duration"
+            value={qualification.duration}
+            onChange={handleQualificationChange}
+            placeholder="Duration"
+            className="p-2 border rounded"
+            />
+            <input
+            name="training_center"
+            value={qualification.training_center}
+            onChange={handleQualificationChange}
+            placeholder="Training Center"
+            className="p-2 border rounded"
+            />
+            <input
+            name="course_study"
+            value={qualification.course_study}
+            onChange={handleQualificationChange}
+            placeholder="Course of Study"
+            className="p-2 border rounded"
+            />
+        </div>
+        <button
+            type="button"
+            onClick={addQualification}
+            className="bg-blue-100 text-blue-600 px-3 py-1 rounded text-sm"
+        >
+            Add Qualification
+        </button>
+        
+        {form.qualifications.length > 0 && (
+            <div className="mt-2">
+            <h4 className="text-sm font-medium">Added Qualifications:</h4>
+            <ul className="list-disc pl-5 text-sm">
+                {form.qualifications.map((q, i) => (
+                <li key={i}>{q.certificate_obtained} - {q.awarding_body}</li>
+                ))}
+            </ul>
+            </div>
+        )}
+        </div>
+
+        {/* Documents */}
+        <div className="space-y-2">
+        <h3 className="font-semibold text-gray-700">Documents</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+            name="document_type"
+            value={document.document_type}
+            onChange={handleDocumentChange}
+            placeholder="Document Type"
+            className="p-2 border rounded"
+            />
+            <input
+            type="file"
+            name="file"
+            onChange={handleDocumentChange}
+            className="p-2 border rounded"
+            />
+        </div>
+        <button
+            type="button"
+            onClick={addDocument}
+            className="bg-blue-100 text-blue-600 px-3 py-1 rounded text-sm"
+        >
+            Add Document
+        </button>
+        
+        {form.documents.length > 0 && (
+            <div className="mt-2">
+            <h4 className="text-sm font-medium">Added Documents:</h4>
+            <ul className="list-disc pl-5 text-sm">
+                {form.documents.map((d, i) => (
+                <li key={i}>{d.document_type}</li>
+                ))}
+            </ul>
+            </div>
+        )}
+        </div>
+
+        {/* Witness and Payment */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+            <h3 className="font-semibold text-gray-700">Witness Information</h3>
+            <input
+            name="witness_name"
+            value={form.witness_name}
+            onChange={handleChange}
+            placeholder="Witness Name"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            name="witness_phone"
+            value={form.witness_phone}
+            onChange={handleChange}
+            placeholder="Witness Phone"
+            className="w-full p-2 border rounded"
+            required
+            />
+            <input
+            type="file"
+            name="witness_signature"
+            onChange={handleFileChange}
+            className="w-full p-2 border rounded"
+            required
+            />
+        </div>
+        <div className="space-y-2">
+            <h3 className="font-semibold text-gray-700">Payment</h3>
+            <input
+            type="file"
+            name="payment_proof"
+            onChange={handleFileChange}
+            className="w-full p-2 border rounded"
+            required
+            />
+        </div>
+        </div>
+
+        <button
+        type="submit"
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+        Submit Application
+        </button>
+    </form>
+    </div>
+);
+};
+export default PractitionerForm;
+
+// PractitionersList component remains the same as in your original code
+// ... (keep the existing PractitionersList implementation)

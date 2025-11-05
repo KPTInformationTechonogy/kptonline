@@ -1,8 +1,10 @@
 // app/products/[slug]/page.tsx
+
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products, Product } from "@/data/products";
+import { useState } from "react";
 
 interface ProductPageProps {
 params: {
@@ -35,10 +37,13 @@ return {
 
 export default function ProductDetailPage({ params }: ProductPageProps) {
 const product = products.find((p) => p.slug === params.slug);
+const [selectedImage, setSelectedImage] = useState<'primary' | 'secondary'>('primary');
 
 if (!product) {
     notFound();
 }
+
+const currentImage = selectedImage === 'primary' ? product.primaryImage : product.secondaryImage;
 
 return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -70,7 +75,7 @@ return (
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-100">
                 <Image
-                src={product.primaryImage}
+                src={currentImage}
                 alt={product.name}
                 fill
                 className="object-cover"
@@ -80,8 +85,15 @@ return (
             </div>
             
             {/* Thumbnail Gallery */}
-            <div className="flex gap-3 overflow-x-auto">
-            <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg border-2 border-yellow-500 p-1">
+            <div className="flex gap-3">
+            <button 
+                onClick={() => setSelectedImage('primary')}
+                className={`flex-shrink-0 w-20 h-20 bg-white rounded-lg border-2 p-1 transition-all ${
+                selectedImage === 'primary' 
+                    ? 'border-yellow-500 scale-105' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+            >
                 <Image
                 src={product.primaryImage}
                 alt={product.name}
@@ -89,16 +101,23 @@ return (
                 height={80}
                 className="object-cover rounded-md w-full h-full"
                 />
-            </div>
-            <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg border border-gray-200 p-1">
+            </button>
+            <button 
+                onClick={() => setSelectedImage('secondary')}
+                className={`flex-shrink-0 w-20 h-20 bg-white rounded-lg border-2 p-1 transition-all ${
+                selectedImage === 'secondary' 
+                    ? 'border-yellow-500 scale-105' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+            >
                 <Image
                 src={product.secondaryImage}
-                alt={`${product.name} alternative`}
+                alt={`${product.name} alternative view`}
                 width={80}
                 height={80}
                 className="object-cover rounded-md w-full h-full"
                 />
-            </div>
+            </button>
             </div>
         </div>
 
@@ -174,26 +193,26 @@ return (
 
             {/* Action Buttons */}
             <div className="space-y-4">
-                {product.inStock ? (
-                    <Link
-                    href={`/contact?product_id=${product.id}&product_name=${encodeURIComponent(product.name)}&product_price=${encodeURIComponent(product.price)}`}
-                    className="block"
-                    >
-                    <button 
-                        className="w-full bg-yellow-500 text-white font-semibold py-4 rounded-xl hover:bg-yellow-600 transition-colors text-lg"
-                    >
-                        Send Inquiry
-                    </button>
-                    </Link>
-                ) : (
-                    <button 
-                    disabled
-                    className="w-full bg-gray-400 text-white font-semibold py-4 rounded-xl cursor-not-allowed text-lg"
-                    >
-                    Out of Stock
-                    </button>
-                )}
-                </div>
+            {product.inStock ? (
+                <Link
+                href={`/contact?product_id=${product.id}&product_name=${encodeURIComponent(product.name)}&product_price=${encodeURIComponent(product.price)}`}
+                className="block"
+                >
+                <button 
+                    className="w-full bg-yellow-500 text-white font-semibold py-4 rounded-xl hover:bg-yellow-600 transition-colors text-lg"
+                >
+                    Send Inquiry
+                </button>
+                </Link>
+            ) : (
+                <button 
+                disabled
+                className="w-full bg-gray-400 text-white font-semibold py-4 rounded-xl cursor-not-allowed text-lg"
+                >
+                Out of Stock
+                </button>
+            )}
+            </div>
 
             {/* Delivery Info */}
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">

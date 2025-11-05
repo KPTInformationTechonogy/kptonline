@@ -1,9 +1,9 @@
 // data/products.ts
 import Hinges from "@/images/Hinges - Copy.png";
 import Drywall from "@/images/Drywall.png";
-import angleiron from "@/images/angleiron.png";
-import carbinateHinges from "@/images/carbinateHinges.jpeg"
-import andleiron from "@/images/angleiron.jpeg"
+import angleIron from "@/images/angleiron.png";
+import carbonateHinges from "@/images/carbinateHinges.jpeg";
+import angleIron2 from "@/images/angleiron.jpeg";
 import IMG4 from "@/images/IMG3-4.jpg";
 import IMG5 from "@/images/IMG_1_5.jpg";
 import IMG6 from "@/images/IMG_1_4.jpg";
@@ -18,9 +18,26 @@ import runner14 from "@/images/runner14.jpeg";
 import runner12 from "@/images/runner12.jpeg";
 import runner10 from "@/images/runner10.jpeg";
 import runner from "@/images/runner.jpg";
-import bedhook from "@/images/bedhook.png";
+import bedHook from "@/images/bedhook.png";
 import wpcPanel from "@/images/Wallpanel.png";
 import wpcPanel2 from "@/images/WPC-Flute-Panel.jpg";
+import tapTurkey from "@/images/turkey.jpg";
+import tapTurkey2 from "@/images/download.jpg";
+import cobra from "@/images/cobra.jpg";
+import cobra2 from "@/images/cobra2.jpg";
+import sink from "@/images/sink.jpg";
+import sink3 from "@/images/sink3.jpg";
+import shower from "@/images/pressing shower.jpg";
+import shower2 from "@/images/pressing1.jpg";
+import mixer from "@/images/baxmixer.jpg";
+import pvc from "@/images/pvc valve.jpg";
+import pvc2 from "@/images/pvc valve2.jpg";
+import magic from "@/images/magicconnector.jpg";
+import magic2 from "@/images/margicconnector.jpg";
+import waste from "@/images/waste.jpg";
+import showerHead from "@/images/showerhead.jpg";
+import showerHead2 from "@/images/showerhead2.jpg";
+
 export interface Product {
 id: number;
 name: string;
@@ -46,12 +63,12 @@ deliveryTime: string;
 export const products: Product[] = [
 {
     id: 1,
-    name: "Carbinate Hinges",
+    name: "Carbonate Hinges",
     price: "₦40,000",
     description: "High-quality steel hinges with corrosion-resistant coating, perfect for all door types including heavy-duty applications.",
     primaryImage: Hinges,
-    secondaryImage: carbinateHinges,
-    slug: "carbinate-hinges",
+    secondaryImage: carbonateHinges,
+    slug: "carbonate-hinges",
     category: "Hardware",
     specifications: {
     material: "Carbon Steel",
@@ -75,8 +92,8 @@ export const products: Product[] = [
     name: "Angle Bracket",
     price: "₦40,500",
     description: "Sturdy steel angle brackets for structural support in furniture and construction projects.",
-    primaryImage: angleiron,
-    secondaryImage: andleiron,
+    primaryImage: angleIron,
+    secondaryImage: angleIron2,
     slug: "angle-bracket",
     category: "Hardware",
     specifications: {
@@ -464,9 +481,9 @@ export const products: Product[] = [
     id: 17,
     name: "Bed Hooks",
     price: "₦75,000",
-    description: "Sturbed bed frame hooks for secure assembly and disassembly of bed frames.",
-    primaryImage: bedhook,
-    secondaryImage: bedhook,
+    description: "Sturdy bed frame hooks for secure assembly and disassembly of bed frames.",
+    primaryImage: bedHook,
+    secondaryImage: bedHook,
     slug: "bed-hooks",
     category: "Furniture Hardware",
     specifications: {
@@ -491,27 +508,270 @@ export const products: Product[] = [
     name: "Wall Panel WPC",
     price: "₦15,000",
     description: "Waterproof Wood-Plastic Composite wall panels perfect for interior and exterior wall decoration. Eco-friendly and durable alternative to traditional wood panels.",
-    primaryImage: wpcPanel, 
-    secondaryImage: wpcPanel2, 
+    primaryImage: wpcPanel,
+    secondaryImage: wpcPanel2,
     slug: "wall-panel-wpc",
     category: "Building Materials",
     specifications: {
-        material: "Wood-Plastic Composite",
-        size: "8x4 feet",
-        weight: "15kg per panel",
-        color: "Wood Grain (Various finishes)",
-        quantity_per_carton: "4 panels"
+    material: "Wood-Plastic Composite",
+    size: "8x4 feet",
+    weight: "15kg per panel",
+    color: "Wood Grain (Various finishes)",
+    quantity_per_carton: "4 panels"
     },
     features: [
-        "100% waterproof",
-        "Eco-friendly material",
-        "Easy installation",
-        "Low maintenance",
-        "Termite resistant",
-        "UV resistant"
+    "100% waterproof",
+    "Eco-friendly material",
+    "Easy installation",
+    "Low maintenance",
+    "Termite resistant",
+    "UV resistant"
     ],
     inStock: true,
     minOrder: "10 panels",
+    deliveryTime: "24-48 hours"
+},
+{
+    id: 19,
+    name: "Tap, Turkey",
+    price: "₦15,000",
+    description: "High-quality Turkish-made tap with durable construction and elegant design for kitchen and bathroom use.",
+    primaryImage: tapTurkey,
+    secondaryImage: tapTurkey2,
+    slug: "tap-turkey",
+    category: "Plumbing Materials",
+    specifications: {
+    material: "Brass with Chrome Finish",
+    size: "Standard",
+    weight: "800g",
+    color: "Chrome",
+    quantity_per_carton: "240 pcs"
+    },
+    features: [
+    "Durable brass construction",
+    "Corrosion resistant",
+    "Easy installation",
+    "Smooth operation",
+    "Water efficient"
+    ],
+    inStock: true,
+    minOrder: "50 pcs",
+    deliveryTime: "24-48 hours"
+},
+{
+    id: 20,
+    name: "Kitchen Sink Faucet",
+    price: "₦15,000",
+    description: "Modern kitchen sink faucet with sleek design and reliable performance for daily use.",
+    primaryImage: sink,
+    secondaryImage: sink3,
+    slug: "kitchen-sink-faucet",
+    category: "Plumbing Materials",
+    specifications: {
+    material: "Stainless Steel",
+    size: "Standard",
+    weight: "1.2kg",
+    color: "Chrome",
+    quantity_per_carton: "240 pcs"
+    },
+    features: [
+    "Easy to clean",
+    "Durable construction",
+    "Smooth handle operation",
+    "Water saving",
+    "Modern design"
+    ],
+    inStock: true,
+    minOrder: "50 pcs",
+    deliveryTime: "24-48 hours"
+},
+{
+    id: 21,
+    name: "Kitchen Sink Faucet Cobra",
+    price: "₦15,000",
+    description: "Cobra-style kitchen sink faucet with flexible hose and spray function for versatile kitchen tasks.",
+    primaryImage: cobra,
+    secondaryImage: cobra2,
+    slug: "kitchen-sink-faucet-cobra",
+    category: "Plumbing Materials",
+    specifications: {
+    material: "Stainless Steel",
+    size: "Standard with pull-out spray",
+    weight: "1.5kg",
+    color: "Chrome",
+    quantity_per_carton: "240 pcs"
+    },
+    features: [
+    "Pull-out spray head",
+    "Flexible hose",
+    "Multiple spray patterns",
+    "Easy installation",
+    "Durable finish"
+    ],
+    inStock: true,
+    minOrder: "50 pcs",
+    deliveryTime: "24-48 hours"
+},
+{
+    id: 22,
+    name: "Bath Mixer Plastic",
+    price: "₦15,000",
+    description: "Plastic bath mixer with reliable performance and easy installation for bathroom use.",
+    primaryImage: mixer,
+    secondaryImage: mixer,
+    slug: "bath-mixer-plastic",
+    category: "Plumbing Materials",
+    specifications: {
+    material: "High-Quality Plastic",
+    size: "Standard",
+    weight: "600g",
+    color: "White",
+    quantity_per_carton: "240 pcs"
+    },
+    features: [
+    "Corrosion resistant",
+    "Easy to install",
+    "Lightweight",
+    "Cost-effective",
+    "Durable plastic construction"
+    ],
+    inStock: true,
+    minOrder: "50 pcs",
+    deliveryTime: "24-48 hours"
+},
+{
+    id: 23,
+    name: "Pressing Shower",
+    price: "₦15,000",
+    description: "Pressure shower system with efficient water flow and comfortable shower experience.",
+    primaryImage: shower,
+    secondaryImage: shower2,
+    slug: "pressing-shower",
+    category: "Plumbing Materials",
+    specifications: {
+    material: "Plastic and Metal",
+    size: "Standard",
+    weight: "1kg",
+    color: "White/Chrome",
+    quantity_per_carton: "240 pcs"
+    },
+    features: [
+    "Good water pressure",
+    "Easy installation",
+    "Comfortable grip",
+    "Adjustable settings",
+    "Durable construction"
+    ],
+    inStock: true,
+    minOrder: "50 pcs",
+    deliveryTime: "24-48 hours"
+},
+{
+    id: 24,
+    name: "PVC Ball Valve",
+    price: "₦15,000",
+    description: "High-quality PVC ball valves available in various sizes for plumbing applications.",
+    primaryImage: pvc,
+    secondaryImage: pvc2,
+    slug: "pvc-ball-valve",
+    category: "Plumbing Materials",
+    specifications: {
+    material: "PVC",
+    size: "1 inch, 1/2 inch, 3/4 inch",
+    weight: "200-400g depending on size",
+    color: "White",
+    quantity_per_carton: "240 pcs"
+    },
+    features: [
+    "Corrosion resistant",
+    "Easy to install",
+    "Smooth operation",
+    "Durable PVC material",
+    "Multiple size options"
+    ],
+    inStock: true,
+    minOrder: "50 pcs",
+    deliveryTime: "24-48 hours"
+},
+{
+    id: 25,
+    name: "WC Magic Connector",
+    price: "₦15,000",
+    description: "Flexible connector for toilet installation with easy connection and reliable seal.",
+    primaryImage: magic,
+    secondaryImage: magic2,
+    slug: "wc-magic-connector",
+    category: "Plumbing Materials",
+    specifications: {
+    material: "Stainless Steel and Rubber",
+    size: "4 inch",
+    weight: "300g",
+    color: "Silver",
+    quantity_per_carton: "240 pcs"
+    },
+    features: [
+    "Flexible installation",
+    "Watertight seal",
+    "Easy to connect",
+    "Durable materials",
+    "Corrosion resistant"
+    ],
+    inStock: true,
+    minOrder: "50 pcs",
+    deliveryTime: "24-48 hours"
+},
+{
+    id: 26,
+    name: "Magic Waste Pipe",
+    price: "₦15,000",
+    description: "Flexible waste pipe for sink and bathroom drainage with easy installation.",
+    primaryImage: waste,
+    secondaryImage: waste,
+    slug: "magic-waste-pipe",
+    category: "Plumbing Materials",
+    specifications: {
+    material: "Plastic",
+    size: "1-1/2 inch",
+    weight: "400g",
+    color: "White",
+    quantity_per_carton: "240 pcs"
+    },
+    features: [
+    "Flexible design",
+    "Easy installation",
+    "Corrosion resistant",
+    "Durable plastic",
+    "Universal fit"
+    ],
+    inStock: true,
+    minOrder: "50 pcs",
+    deliveryTime: "24-48 hours"
+},
+{
+    id: 27,
+    name: "Shower Head",
+    price: "₦15,000",
+    description: "High-quality shower head with multiple spray patterns and efficient water distribution.",
+    primaryImage: showerHead,
+    secondaryImage: showerHead2,
+    slug: "shower-head",
+    category: "Plumbing Materials",
+    specifications: {
+    material: "Plastic and Metal",
+    size: "Standard",
+    weight: "500g",
+    color: "Chrome",
+    quantity_per_carton: "240 pcs"
+    },
+    features: [
+    "Multiple spray patterns",
+    "Easy to clean",
+    "Water efficient",
+    "Adjustable angle",
+    "Durable finish"
+    ],
+    inStock: true,
+    minOrder: "50 pcs",
     deliveryTime: "24-48 hours"
 }
 ];

@@ -38,13 +38,16 @@ import waste from "@/images/waste.jpg";
 import showerHead from "@/images/showerhead.jpg";
 import showerHead2 from "@/images/showerhead2.jpg";
 
+// Define proper type for images
+type ProductImage = typeof Hinges;
+
 export interface Product {
 id: number;
 name: string;
 price: string;
 description: string;
-primaryImage: any;
-secondaryImage: any;
+primaryImage: ProductImage;
+secondaryImage: ProductImage;
 slug: string;
 category: string;
 specifications: {
@@ -534,7 +537,7 @@ export const products: Product[] = [
 {
     id: 19,
     name: "Tap, Turkey",
-    price: "₦15,000",
+    price: "₦650",
     description: "High-quality Turkish-made tap with durable construction and elegant design for kitchen and bathroom use.",
     primaryImage: tapTurkey,
     secondaryImage: tapTurkey2,
@@ -561,7 +564,7 @@ export const products: Product[] = [
 {
     id: 20,
     name: "Kitchen Sink Faucet",
-    price: "₦15,000",
+    price: "₦1400",
     description: "Modern kitchen sink faucet with sleek design and reliable performance for daily use.",
     primaryImage: sink,
     secondaryImage: sink3,
@@ -572,7 +575,7 @@ export const products: Product[] = [
     size: "Standard",
     weight: "1.2kg",
     color: "Chrome",
-    quantity_per_carton: "240 pcs"
+    quantity_per_carton: "100 pcs"
     },
     features: [
     "Easy to clean",
@@ -588,7 +591,7 @@ export const products: Product[] = [
 {
     id: 21,
     name: "Kitchen Sink Faucet Cobra",
-    price: "₦15,000",
+    price: "₦1400",
     description: "Cobra-style kitchen sink faucet with flexible hose and spray function for versatile kitchen tasks.",
     primaryImage: cobra,
     secondaryImage: cobra2,
@@ -599,7 +602,7 @@ export const products: Product[] = [
     size: "Standard with pull-out spray",
     weight: "1.5kg",
     color: "Chrome",
-    quantity_per_carton: "240 pcs"
+    quantity_per_carton: "100 pcs"
     },
     features: [
     "Pull-out spray head",
@@ -615,7 +618,7 @@ export const products: Product[] = [
 {
     id: 22,
     name: "Bath Mixer Plastic",
-    price: "₦15,000",
+    price: "₦10000",
     description: "Plastic bath mixer with reliable performance and easy installation for bathroom use.",
     primaryImage: mixer,
     secondaryImage: mixer,
@@ -626,7 +629,7 @@ export const products: Product[] = [
     size: "Standard",
     weight: "600g",
     color: "White",
-    quantity_per_carton: "240 pcs"
+    quantity_per_carton: "24 pcs"
     },
     features: [
     "Corrosion resistant",
@@ -636,13 +639,13 @@ export const products: Product[] = [
     "Durable plastic construction"
     ],
     inStock: true,
-    minOrder: "50 pcs",
+    minOrder: "10 pcs",
     deliveryTime: "24-48 hours"
 },
 {
     id: 23,
     name: "Pressing Shower",
-    price: "₦15,000",
+    price: "₦2000",
     description: "Pressure shower system with efficient water flow and comfortable shower experience.",
     primaryImage: shower,
     secondaryImage: shower2,
@@ -653,7 +656,7 @@ export const products: Product[] = [
     size: "Standard",
     weight: "1kg",
     color: "White/Chrome",
-    quantity_per_carton: "240 pcs"
+    quantity_per_carton: "60 pcs"
     },
     features: [
     "Good water pressure",
@@ -663,13 +666,13 @@ export const products: Product[] = [
     "Durable construction"
     ],
     inStock: true,
-    minOrder: "50 pcs",
+    minOrder: "20 pcs",
     deliveryTime: "24-48 hours"
 },
 {
     id: 24,
     name: "PVC Ball Valve",
-    price: "₦15,000",
+    price: "₦1000",
     description: "High-quality PVC ball valves available in various sizes for plumbing applications.",
     primaryImage: pvc,
     secondaryImage: pvc2,
@@ -680,7 +683,7 @@ export const products: Product[] = [
     size: "1 inch, 1/2 inch, 3/4 inch",
     weight: "200-400g depending on size",
     color: "White",
-    quantity_per_carton: "240 pcs"
+    quantity_per_carton: "200 pcs"
     },
     features: [
     "Corrosion resistant",
@@ -696,7 +699,7 @@ export const products: Product[] = [
 {
     id: 25,
     name: "WC Magic Connector",
-    price: "₦15,000",
+    price: "₦2100",
     description: "Flexible connector for toilet installation with easy connection and reliable seal.",
     primaryImage: magic,
     secondaryImage: magic2,
@@ -707,7 +710,7 @@ export const products: Product[] = [
     size: "4 inch",
     weight: "300g",
     color: "Silver",
-    quantity_per_carton: "240 pcs"
+    quantity_per_carton: "30 pcs"
     },
     features: [
     "Flexible installation",
@@ -717,13 +720,13 @@ export const products: Product[] = [
     "Corrosion resistant"
     ],
     inStock: true,
-    minOrder: "50 pcs",
+    minOrder: "15 pcs",
     deliveryTime: "24-48 hours"
 },
 {
     id: 26,
     name: "Magic Waste Pipe",
-    price: "₦15,000",
+    price: "₦900",
     description: "Flexible waste pipe for sink and bathroom drainage with easy installation.",
     primaryImage: waste,
     secondaryImage: waste,
@@ -734,7 +737,7 @@ export const products: Product[] = [
     size: "1-1/2 inch",
     weight: "400g",
     color: "White",
-    quantity_per_carton: "240 pcs"
+    quantity_per_carton: "100 pcs"
     },
     features: [
     "Flexible design",
@@ -750,7 +753,7 @@ export const products: Product[] = [
 {
     id: 27,
     name: "Shower Head",
-    price: "₦15,000",
+    price: "₦800",
     description: "High-quality shower head with multiple spray patterns and efficient water distribution.",
     primaryImage: showerHead,
     secondaryImage: showerHead2,
@@ -761,7 +764,7 @@ export const products: Product[] = [
     size: "Standard",
     weight: "500g",
     color: "Chrome",
-    quantity_per_carton: "240 pcs"
+    quantity_per_carton: "80 pcs"
     },
     features: [
     "Multiple spray patterns",
@@ -771,7 +774,7 @@ export const products: Product[] = [
     "Durable finish"
     ],
     inStock: true,
-    minOrder: "50 pcs",
+    minOrder: "20 pcs",
     deliveryTime: "24-48 hours"
 }
 ];

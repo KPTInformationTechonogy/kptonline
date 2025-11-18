@@ -1,345 +1,193 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import api from '@/lib/api';
-import axios from 'axios';
+// Components/distributor/ProductForm.tsx
+'use client';
 
-interface FormData {
-name: string;
-description: string;
-price: number;
-stock: number;
-category_id: number;
-brand_id?: number;
-}
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { ProductInDB, ProductCreate, ProductUpdate } from '@/types/product';
 
-interface FileState {
-file: File | null;
-name: string | null;
-}
-
-interface Category {
-id: number;
-name: string;
-}
-
-interface Brand {
-id: number;
-name: string;
-}
-
-const ProductForm: React.FC = () => {
-const [formData, setFormData] = useState<FormData>({
-    name: '',
-    description: '',
-    price: 0,
-    stock: 0,
-    category_id: 0,
-    brand_id: undefined,
+// Define the form schema
+const productFormSchema = z.object({
+name: z.string().min(1, 'Product name is required'),
+description: z.string().optional(),
+price: z.number().min(0, 'Price must be a positive number'),
+stock: z.number().int().min(0, 'Stock must be a non-negative integer'),
+category_id: z.number().min(1, 'Category is required'),
+brand_id: z.number().optional(),
+image_url: z.string().url().optional().or(z.literal('')),
+file_url: z.string().url().optional().or(z.literal('')),
 });
 
-const [fileState, setFileState] = useState<FileState>({
-    file: null,
-    name: null,
+type ProductFormValues = z.infer<typeof productFormSchema>;
+
+// Define the props for the ProductForm component
+interface ProductFormProps {
+initialData?: ProductInDB | null;
+onSubmit: (values: ProductCreate | ProductUpdate) => Promise<void>;
+onCancel: () => void;
+}
+
+export default function ProductForm({ initialData, onSubmit, onCancel }: ProductFormProps) {
+const isEditing = !!initialData;
+
+const form = useForm<ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: {
+    name: initialData?.name || '',
+    description: initialData?.description || '',
+    price: initialData?.price || 0,
+    stock: initialData?.stock || 0,
+    category_id: initialData?.category.id || 0,
+    brand_id: initialData?.brand?.id || 0,
+    image_url: initialData?.image_url || '',
+    file_url: initialData?.file_url || '',
+    },
 });
 
-const [categories, setCategories] = useState<Category[]>([]);
-const [brands, setBrands] = useState<Brand[]>([]);
-const [message, setMessage] = useState<string>('');
-const [error, setError] = useState<string>('');
-const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-const [isLoading, setIsLoading] = useState<boolean>(true);
-
-// Fetch categories and brands on component mount
-useEffect(() => {
-    const fetchData = async () => {
-    try {
-        setIsLoading(true);
-        const [categoriesResponse, brandsResponse] = await Promise.all([
-        api.get('http://127.0.0.1:8000/api/v1/products/categories/'),
-        api.get('http://127.0.0.1:8000/api/v1/products/brands/')
-        ]);
-        
-        setCategories(categoriesResponse.data);
-        setBrands(brandsResponse.data);
-        
-        // Set default category if available
-        if (categoriesResponse.data.length > 0) {
-        setFormData(prev => ({ ...prev, category_id: categoriesResponse.data[0].id }));
-        }
-    } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to load categories and brands');
-    } finally {
-        setIsLoading(false);
-    }
-    };
-
-    fetchData();
-}, []);
-
-const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+const handleSubmit = async (values: ProductFormValues) => {
+    await onSubmit(values);
 };
-
-const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-    setFileState({
-        file: selectedFile,
-        name: selectedFile.name,
-    });
-    } else {
-    setFileState({
-        file: null,
-        name: null,
-    });
-    }
-};
-
-const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setMessage('');
-    setError('');
-    setIsSubmitting(true);
-
-    try {
-    const data = new FormData();
-    data.append('name', formData.name);
-    if (formData.description) {
-        data.append('description', formData.description);
-    }
-    data.append('price', formData.price.toString());
-    data.append('stock', formData.stock.toString());
-    data.append('category_id', formData.category_id.toString());
-    if (formData.brand_id) {
-        data.append('brand_id', formData.brand_id.toString());
-    }
-    if (fileState.file) {
-        data.append('image_file', fileState.file);
-    }
-
-    const response = await api.post('http://127.0.0.1:8000/api/v1/admin/products/', data, {
-        headers: {
-        'Content-Type': 'multipart/form-data',
-        },
-    });
-
-    setMessage('Product created successfully!');
-    console.log('Success:', response.data);
-    
-    // Reset form after successful submission
-    setFormData({
-        name: '',
-        description: '',
-        price: 0,
-        stock: 0,
-        category_id: categories.length > 0 ? categories[0].id : 0,
-        brand_id: undefined,
-    });
-    setFileState({ file: null, name: null });
-    } catch (err: any) {
-    if (axios.isAxiosError(err) && err.response) {
-        setError(`Error: ${err.response.data.detail || 'An unexpected error occurred.'}`);
-    } else {
-        setError('An unexpected error occurred.');
-    }
-    console.error('Error:', err);
-    } finally {
-    setIsSubmitting(false);
-    }
-};
-
-if (isLoading) {
-    return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md flex justify-center items-center h-64">
-        <div className="flex flex-col items-center">
-        <svg className="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <p className="mt-2 text-gray-600">Loading categories and brands...</p>
-        </div>
-    </div>
-    );
-}
 
 return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-    <h2 className="text-2xl font-bold text-gray-800 mb-6">Create New Product</h2>
-    
-    <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Name */}
-        <div className="col-span-2">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Product Name <span className="text-red-500">*</span>
-            </label>
-            <input
+        <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Product Name *
+        </label>
+        <input
             type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            placeholder="Enter product name"
-            />
-        </div>
-
-        {/* Description */}
-        <div className="col-span-2">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-            Description
-            </label>
-            <textarea
-            id="description"
-            name="description"
-            rows={3}
-            value={formData.description || ''}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            placeholder="Enter product description"
-            />
+            {...form.register('name')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {form.formState.errors.name && (
+            <p className="text-red-500 text-sm mt-1">{form.formState.errors.name.message}</p>
+        )}
         </div>
 
         {/* Price */}
         <div>
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-            Price <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-            <span className="absolute left-3 top-2 text-gray-500">$</span>
-            <input
-                type="number"
-                step="0.01"
-                id="price"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                required
-                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                placeholder="0.00"
-            />
-            </div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Price (₦) *
+        </label>
+        <input
+            type="number"
+            step="0.01"
+            {...form.register('price', { valueAsNumber: true })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {form.formState.errors.price && (
+            <p className="text-red-500 text-sm mt-1">{form.formState.errors.price.message}</p>
+        )}
         </div>
 
         {/* Stock */}
         <div>
-            <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-1">
-            Stock <span className="text-red-500">*</span>
-            </label>
-            <input
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Stock Quantity *
+        </label>
+        <input
             type="number"
-            id="stock"
-            name="stock"
-            value={formData.stock}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            placeholder="Enter stock quantity"
-            />
+            {...form.register('stock', { valueAsNumber: true })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {form.formState.errors.stock && (
+            <p className="text-red-500 text-sm mt-1">{form.formState.errors.stock.message}</p>
+        )}
         </div>
 
         {/* Category */}
         <div>
-            <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">
-            Category <span className="text-red-500">*</span>
-            </label>
-            <select
-            id="category_id"
-            name="category_id"
-            value={formData.category_id}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            >
-            {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                {category.name}
-                </option>
-            ))}
-            </select>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Category *
+        </label>
+        <select
+            {...form.register('category_id', { valueAsNumber: true })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+            <option value={0}>Select a category</option>
+            {/* You'll need to fetch categories from your API */}
+        </select>
+        {form.formState.errors.category_id && (
+            <p className="text-red-500 text-sm mt-1">{form.formState.errors.category_id.message}</p>
+        )}
         </div>
 
         {/* Brand */}
         <div>
-            <label htmlFor="brand_id" className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
             Brand
-            </label>
-            <select
-            id="brand_id"
-            name="brand_id"
-            value={formData.brand_id || ''}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            >
-            <option value="">Select a brand (optional)</option>
-            {brands.map((brand) => (
-                <option key={brand.id} value={brand.id}>
-                {brand.name}
-                </option>
-            ))}
-            </select>
-        </div>
-
-        {/* File Upload */}
-        <div className="col-span-2">
-            <label htmlFor="image_file" className="block text-sm font-medium text-gray-700 mb-1">
-            Product Image/PDF
-            </label>
-            <div className="mt-1 flex items-center">
-            <label className="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Choose File
-                <input
-                type="file"
-                id="image_file"
-                name="image_file"
-                onChange={handleFileChange}
-                accept="image/*,application/pdf"
-                className="sr-only"
-                />
-            </label>
-            <span className="ml-3 text-sm text-gray-500">
-                {fileState.name || 'No file chosen'}
-            </span>
-            </div>
-            <p className="mt-1 text-xs text-gray-500">PNG, JPG, or PDF up to 10MB</p>
-        </div>
-        </div>
-
-        {/* Submit Button */}
-        <div className="pt-4">
-        <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+        </label>
+        <select
+            {...form.register('brand_id', { valueAsNumber: true })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-            {isSubmitting ? (
-            <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-            </>
-            ) : 'Create Product'}
-        </button>
+            <option value={0}>No brand</option>
+            {/* You'll need to fetch brands from your API */}
+        </select>
         </div>
 
-        {/* Messages */}
-        {message && (
-        <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-sm text-green-700">{message}</p>
-        </div>
+        {/* Image URL */}
+        <div className="md:col-span-2">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Image URL
+        </label>
+        <input
+            type="url"
+            {...form.register('image_url')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="https://example.com/image.jpg"
+        />
+        {form.formState.errors.image_url && (
+            <p className="text-red-500 text-sm mt-1">{form.formState.errors.image_url.message}</p>
         )}
-        {error && (
-        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-700">{error}</p>
         </div>
-        )}
-    </form>
+
+        {/* File URL */}
+        <div className="md:col-span-2">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            File URL (PDF, etc.)
+        </label>
+        <input
+            type="url"
+            {...form.register('file_url')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="https://example.com/document.pdf"
+        />
+        </div>
+
+        {/* Description */}
+        <div className="md:col-span-2">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Description
+        </label>
+        <textarea
+            rows={4}
+            {...form.register('description')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        </div>
     </div>
-);
-};
 
-export default ProductForm;
+    {/* Form Actions */}
+    <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+        <button
+        type="button"
+        onClick={onCancel}
+        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+        Cancel
+        </button>
+        <button
+        type="submit"
+        disabled={form.formState.isSubmitting}
+        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        >
+        {form.formState.isSubmitting ? 'Saving...' : isEditing ? 'Update Product' : 'Create Product'}
+        </button>
+    </div>
+    </form>
+);
+}

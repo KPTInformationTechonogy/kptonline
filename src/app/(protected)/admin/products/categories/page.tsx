@@ -3,8 +3,21 @@
 import React, { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { CategoryInDB } from '@/types/product';
-import { Plus, X, Loader2, Edit, Trash2, Tag, Box, CheckCircle } from 'lucide-react';
+import { Plus, X, Loader2, Edit, Trash2, Box, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+
+// Define proper error types
+interface ApiError extends Error {
+response?: {
+    data?: {
+    detail?: string;
+    };
+};
+}
+
+function isApiError(error: unknown): error is ApiError {
+return error instanceof Error && typeof error === 'object' && error !== null;
+}
 
 const initialFormState = { name: '', description: '' };
 
@@ -25,8 +38,12 @@ const fetchCategories = async () => {
     try {
     const response = await api.get('/products/categories/');
     setCategories(response.data);
-    } catch (err: any) {
-    setError(err?.response?.data?.detail || 'Failed to load categories.');
+    } catch (err: unknown) {
+    if (isApiError(err)) {
+        setError(err?.response?.data?.detail || 'Failed to load categories.');
+    } else {
+        setError('Failed to load categories.');
+    }
     } finally {
     setLoading(false);
     }
@@ -81,8 +98,12 @@ const handleFormSubmit = async (e: React.FormEvent) => {
     setEditingId(null);
     setFormState(initialFormState);
     fetchCategories();
-    } catch (err: any) {
-    setFormError(err?.response?.data?.detail || 'An error occurred while saving.');
+    } catch (err: unknown) {
+    if (isApiError(err)) {
+        setFormError(err?.response?.data?.detail || 'An error occurred while saving.');
+    } else {
+        setFormError('An error occurred while saving.');
+    }
     } finally {
     setFormLoading(false);
     }
@@ -96,8 +117,12 @@ const handleDeleteCategory = async (categoryId: number) => {
     await api.delete(`/products/categories/${categoryId}`);
     setSuccessMsg('Category deleted successfully');
     fetchCategories();
-    } catch (err: any) {
-    setError(err?.response?.data?.detail || 'Failed to delete category.');
+    } catch (err: unknown) {
+    if (isApiError(err)) {
+        setError(err?.response?.data?.detail || 'Failed to delete category.');
+    } else {
+        setError('Failed to delete category.');
+    }
     setLoading(false);
     }
 };

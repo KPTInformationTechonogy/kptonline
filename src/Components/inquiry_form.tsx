@@ -207,7 +207,7 @@ return (
                     </svg>
                     </div>
                     <h4 className="text-lg font-semibold text-gray-900 mb-2">Inquiry Sent Successfully!</h4>
-                    <p className="text-gray-600">We'll get back to you within 24 hours.</p>
+                    <p className="text-gray-600">We&apos;ll get back to you within 24 hours.</p>
                 </div>
                 ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -323,7 +323,7 @@ return (
                     <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-600">
                         By submitting this form, you agree to our terms and privacy policy. 
-                        We'll contact you within 24 hours to discuss your inquiry.
+                        We&apos;ll contact you within 24 hours to discuss your inquiry.
                     </p>
                     </div>
 

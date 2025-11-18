@@ -37,26 +37,25 @@ return (
         <div className="flex flex-col gap-4">
         <h1 className="text-lg font-medium">COMPANY</h1>
         <Link href="/about" className="hover:text-yellow-600">About Us</Link>
-        <Link href="/contact" className="hover:text-yellow-600">Careers</Link>
-        <Link href="/privacy" className="hover:text-yellow-600">Blog</Link>
-        <Link href="/privacy" className="hover:text-yellow-600">Affiliate</Link>
+        <Link href="/products" className="hover:text-yellow-600">Careers</Link>
+        <Link href="/" className="hover:text-yellow-600">Affiliate</Link>
         <Link href="/terms" className="hover:text-yellow-600">Contact Us</Link>
         </div>
         <div className="flex flex-col gap-4">
         <h1 className="text-lg font-medium">SHOP</h1>
-        <Link href="/new-arrivals" className="hover:text-yellow-600">New Arrivals</Link>
-        <Link href="/building-materials" className="hover:text-yellow-600">Building Materials</Link>
-        <Link href="/furniture-materials" className="hover:text-yellow-600">Furniture Materials</Link>
-        <Link href="/plumbing" className="hover:text-yellow-600">Plumbing Materials</Link>
+        <Link href="/products" className="hover:text-yellow-600">New Arrivals</Link>
+        <Link href="/products" className="hover:text-yellow-600">Building Materials</Link>
+        <Link href="/products" className="hover:text-yellow-600">Furniture Materials</Link>
+        <Link href="/products" className="hover:text-yellow-600">Plumbing Materials</Link>
         <Link href="/products" className="hover:text-yellow-600">All Products</Link>
         </div>
         <div className="flex flex-col gap-4">
         <h1 className="text-lg font-medium">HELP</h1>
-        <Link href="/support" className="hover:text-yellow-600">Customer Services</Link>
-        <Link href="/account" className="hover:text-yellow-600">My Account</Link>
+        <Link href="/" className="hover:text-yellow-600">Customer Services</Link>
+        <Link href="/" className="hover:text-yellow-600">My Account</Link>
         <Link href="/privacy" className="hover:text-yellow-600">Legal & Privacy</Link>
-        <Link href="/terms" className="hover:text-yellow-600">Terms & Conditions</Link>
-        <Link href="/gift-card" className="hover:text-yellow-600">Gift Card</Link>
+        <Link href="/" className="hover:text-yellow-600">Terms & Conditions</Link>
+        <Link href="/" className="hover:text-yellow-600">Gift Card</Link>
         </div>
     </div>
 

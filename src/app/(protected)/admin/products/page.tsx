@@ -1,13 +1,26 @@
+// app/(protected)/admin/products/page.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import ProductForm from '@/Components/distributor/ProductForm';
 import { ProductInDB, ProductCreate, ProductUpdate } from '@/types/product';
-import Image from 'next/image';
 import { Pencil, Trash2, PlusCircle, Search, Tag, Box } from 'lucide-react';
 import Link from 'next/link';
 import ProductImage from '@/Components/ProductImage';
+
+// Define proper error types
+interface ApiError extends Error {
+response?: {
+    data?: {
+    detail?: string;
+    };
+};
+}
+
+function isApiError(error: unknown): error is ApiError {
+return error instanceof Error && typeof error === 'object' && error !== null;
+}
 
 export default function AdminProductsPage() {
 const [products, setProducts] = useState<ProductInDB[]>([]);
@@ -23,9 +36,13 @@ const fetchProducts = async () => {
     try {
     const response = await api.get('/products/');
     setProducts(response.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
     console.error('Failed to fetch products:', err);
-    setError(err.response?.data?.detail || 'Failed to load products.');
+    if (isApiError(err)) {
+        setError(err.response?.data?.detail || 'Failed to load products.');
+    } else {
+        setError('Failed to load products.');
+    }
     } finally {
     setLoading(false);
     }
@@ -47,9 +64,13 @@ const handleCreateOrUpdate = async (values: ProductCreate | ProductUpdate) => {
     setIsFormOpen(false);
     setEditingProduct(null);
     fetchProducts();
-    } catch (err: any) {
+    } catch (err: unknown) {
     console.error('Save product error:', err);
-    alert(err.response?.data?.detail || 'An error occurred during save.');
+    if (isApiError(err)) {
+        alert(err.response?.data?.detail || 'An error occurred during save.');
+    } else {
+        alert('An error occurred during save.');
+    }
     }
 };
 
@@ -59,9 +80,13 @@ const handleDeleteProduct = async (productId: number) => {
     await api.delete(`/products/${productId}`);
     alert('Product has been successfully deleted.');
     fetchProducts();
-    } catch (err: any) {
+    } catch (err: unknown) {
     console.error('Delete product error:', err);
-    alert(err.response?.data?.detail || 'An error occurred during deletion.');
+    if (isApiError(err)) {
+        alert(err.response?.data?.detail || 'An error occurred during deletion.');
+    } else {
+        alert('An error occurred during deletion.');
+    }
     }
 };
 
@@ -212,32 +237,32 @@ return (
                     <tr key={product.id} className="hover:bg-yellow-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                         {product.image_url ? (
-                            <ProductImage
+                        <ProductImage
                             src={product.image_url}
                             alt={product.name}
                             width={40}
                             height={40}
                             className="rounded-md object-cover"
-                            />
+                        />
                         ) : product.file_url ? (
-                            <a
+                        <a
                             href={product.file_url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 underline"
-                            >
+                        >
                             View PDF
-                            </a>
+                        </a>
                         ) : (
-                            <ProductImage
+                        <ProductImage
                             src="/default-product.png"
                             alt="No image"
                             width={40}
                             height={40}
                             className="rounded-md object-cover"
-                            />
+                        />
                         )}
-                        </td>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-yellow-900">{product.name}</div>
                     </td>

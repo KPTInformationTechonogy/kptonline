@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { Search, Eye, RefreshCw, Truck, Package, XCircle, CheckCircle, Clock } from 'lucide-react';
+import { Search, Eye, RefreshCw, Truck, XCircle, CheckCircle, Clock } from 'lucide-react';
 
 interface OrderItem {
 id: number;
@@ -26,6 +26,15 @@ transaction_id?: string | null;
 created_at: string;
 updated_at: string;
 items: OrderItem[];
+}
+
+interface ApiError {
+response?: {
+    data?: {
+    detail?: string;
+    };
+};
+message?: string;
 }
 
 const statusClasses = {
@@ -68,9 +77,10 @@ const fetchOrders = async () => {
     // Use the correct endpoint from your backend
     const response = await api.get('/admin/orders/');
     setOrders(response.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
     console.error('Failed to fetch orders:', err);
-    setError(err.response?.data?.detail || 'Failed to load orders.');
+    const error = err as ApiError;
+    setError(error.response?.data?.detail || error.message || 'Failed to load orders.');
     } finally {
     setLoading(false);
     }
@@ -90,9 +100,10 @@ const handleUpdateStatus = async () => {
     alert(`Order #${selectedOrder.id} status updated to "${newStatus}"`);
     setIsStatusOpen(false);
     fetchOrders(); // Refresh the orders list
-    } catch (err: any) {
+    } catch (err: unknown) {
     console.error('Update status error:', err);
-    alert(err.response?.data?.detail || "An error occurred while updating the status.");
+    const error = err as ApiError;
+    alert(error.response?.data?.detail || error.message || "An error occurred while updating the status.");
     }
 };
 
@@ -101,9 +112,10 @@ const handleMarkAsPaid = async (orderId: number) => {
     await api.post(`/admin/orders/${orderId}/mark-paid`);
     alert(`Order #${orderId} marked as paid`);
     fetchOrders(); // Refresh the orders list
-    } catch (err: any) {
+    } catch (err: unknown) {
     console.error('Mark as paid error:', err);
-    alert(err.response?.data?.detail || "An error occurred while marking as paid.");
+    const error = err as ApiError;
+    alert(error.response?.data?.detail || error.message || "An error occurred while marking as paid.");
     }
 };
 

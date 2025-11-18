@@ -6,6 +6,19 @@ import { BrandInDB } from '@/types/product';
 import { Plus, X, Loader2, Edit, Trash2, Box, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
+// Define proper error types
+interface ApiError extends Error {
+response?: {
+    data?: {
+    detail?: string;
+    };
+};
+}
+
+function isApiError(error: unknown): error is ApiError {
+return error instanceof Error && typeof error === 'object' && error !== null;
+}
+
 const initialFormState = { name: '', description: '' };
 
 export default function AdminBrandsPage() {
@@ -25,8 +38,12 @@ const fetchBrands = async () => {
     try {
     const response = await api.get('/products/brands/');
     setBrands(response.data);
-    } catch (err: any) {
-    setError(err?.response?.data?.detail || 'Failed to load brands.');
+    } catch (err: unknown) {
+    if (isApiError(err)) {
+        setError(err?.response?.data?.detail || 'Failed to load brands.');
+    } else {
+        setError('Failed to load brands.');
+    }
     } finally {
     setLoading(false);
     }
@@ -81,8 +98,12 @@ const handleFormSubmit = async (e: React.FormEvent) => {
     setEditingId(null);
     setFormState(initialFormState);
     fetchBrands();
-    } catch (err: any) {
-    setFormError(err?.response?.data?.detail || 'An error occurred while saving.');
+    } catch (err: unknown) {
+    if (isApiError(err)) {
+        setFormError(err?.response?.data?.detail || 'An error occurred while saving.');
+    } else {
+        setFormError('An error occurred while saving.');
+    }
     } finally {
     setFormLoading(false);
     }
@@ -96,8 +117,12 @@ const handleDeleteBrand = async (brandId: number) => {
     await api.delete(`/products/brands/${brandId}`);
     setSuccessMsg('Brand deleted successfully');
     fetchBrands();
-    } catch (err: any) {
-    setError(err?.response?.data?.detail || 'Failed to delete brand.');
+    } catch (err: unknown) {
+    if (isApiError(err)) {
+        setError(err?.response?.data?.detail || 'Failed to delete brand.');
+    } else {
+        setError('Failed to delete brand.');
+    }
     setLoading(false);
     }
 };

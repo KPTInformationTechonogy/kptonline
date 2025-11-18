@@ -1,6 +1,5 @@
 // "use client"
 import ProductList from "@/Components/ProductList";
-import ContactUS from "@/Components/ContactUs";
 import Slider from "@/Components/Slider";
 import ImageSlider from "@/Components/ImageSlider";
 import Value from "@/Components/Value";
@@ -20,7 +19,6 @@ const Homepage = async () => {
       
       <div className="mt-24 px-4 md:px-8 lg:px-16 xl:px-32">
         <WhyChooseUs />
-        <ContactUS />
         <FAQ />
       </div>
 

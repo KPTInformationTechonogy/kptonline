@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Location from "@/Components/Location";
 import aliyu from "@/images/aliyu.jpg";
 import ismail from "@/images/ismail.jpg";
+import taha from "@/images/taha.jpg";
 
 import {
   BuildingOffice2Icon,
@@ -21,13 +21,13 @@ export default function AboutPage() {
     { 
       name: "Taha Ali Yahya", 
       role: "Director - Nigeria", 
-      img: ismail,
+      img: taha,
       description: "Leading our West African expansion with extensive industry expertise"
     },
     { 
       name: "Ismail Aliyu Abubakar", 
       role: "General Manager", 
-      img: aliyu,
+      img: ismail,
       description: "Overseeing operations and strategic development across regions"
     },
     { 
@@ -103,7 +103,7 @@ export default function AboutPage() {
             <section id="overview" className="text-center py-16 bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border border-gray-100">
               <div className="max-w-3xl mx-auto">
                 <h1 className="text-5xl font-bold text-gray-900 mb-6">
-                  Building Africa's Future
+                  Building Africa&apos;s Future
                 </h1>
                 <p className="text-xl text-gray-600 leading-relaxed mb-8">
                   For nearly two decades, we have been at the forefront of delivering premium building materials 
@@ -148,7 +148,7 @@ export default function AboutPage() {
                   <h2 className="text-3xl font-semibold text-gray-900">Our Vision</h2>
                 </div>
                 <p className="text-gray-700 leading-relaxed text-lg">
-                  To become Africa's most trusted partner for technology-driven building and home improvement 
+                  To become Africa&apos;s most trusted partner for technology-driven building and home improvement 
                   solutions, transforming living and working environments through uncompromising quality, 
                   innovation, and excellence in service delivery.
                 </p>
@@ -236,9 +236,6 @@ export default function AboutPage() {
                 <p className="text-gray-600 text-lg">
                   Strategically located across four continents to serve global markets
                 </p>
-              </div>
-              <div className="w-full h-96 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center">
-                <Location />
               </div>
             </section>
           </div>

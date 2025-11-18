@@ -3,12 +3,13 @@ import { UserInDB, UserCreate, UserUpdate } from '@/types/user';
 
 // All roles
 const ALL_SYSTEM_ROLES = ['admin', 'distributor', 'customer', 'sales_representative'] as const;
+type SystemRole = typeof ALL_SYSTEM_ROLES[number];
 
 type UserFormValues = {
 email: string;
 password: string;
 full_name: string;
-role: string;
+role: SystemRole;
 is_active: boolean;
 };
 
@@ -23,7 +24,7 @@ const [form, setForm] = useState<UserFormValues>({
     email: initialData?.email || '',
     password: '',
     full_name: initialData?.full_name || '',
-    role: initialData?.role || 'customer',
+    role: (initialData?.role as SystemRole) || 'customer',
     is_active: initialData?.is_active ?? true,
 });
 const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -40,7 +41,7 @@ const validate = (): boolean => {
     if (form.password && form.password.length > 0 && form.password.length < 6) {
     newErrors.password = 'Password must be at least 6 characters.';
     }
-    if (!ALL_SYSTEM_ROLES.includes(form.role as any)) {
+    if (!ALL_SYSTEM_ROLES.includes(form.role)) {
     newErrors.role = 'Invalid user role.';
     }
     setErrors(newErrors);
@@ -48,11 +49,20 @@ const validate = (): boolean => {
 };
 
 const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+    const target = e.target as HTMLInputElement;
     setForm(prev => ({
-    ...prev,
-    [name]: type === 'checkbox' ? checked : value,
+        ...prev,
+        [name]: target.checked,
     }));
+    } else {
+    setForm(prev => ({
+        ...prev,
+        [name]: value,
+    }));
+    }
 };
 
 const handleSubmit = async (e: React.FormEvent) => {
@@ -60,19 +70,31 @@ const handleSubmit = async (e: React.FormEvent) => {
     if (!validate()) return;
     setIsSubmitting(true);
 
-    const payload: UserCreate | UserUpdate = {
+    // Create base payload with proper typing
+    const basePayload = {
     email: form.email,
-    full_name: form.full_name === '' ? null : form.full_name,
+    full_name: form.full_name === '' ? undefined : form.full_name, // Use undefined instead of null
     role: form.role,
     };
 
+    let payload: UserCreate | UserUpdate;
+
     if (initialData) {
-    (payload as UserUpdate).is_active = form.is_active;
+    // For updates
+    payload = {
+        ...basePayload,
+        is_active: form.is_active,
+    } as UserUpdate;
+
     if (form.password) {
         (payload as UserUpdate).password = form.password;
     }
     } else {
-    (payload as UserCreate).password = form.password;
+    // For new users
+    payload = {
+        ...basePayload,
+        password: form.password,
+    } as UserCreate;
     }
 
     await onSubmit(payload);

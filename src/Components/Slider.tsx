@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import tap from "@/images/tap.png";
 import decoration from "@/images/wpcs.png";
 import kptshelves from "@/images/KPT Shelves.png";
 import furniture from "@/images/home-dec.jpeg";

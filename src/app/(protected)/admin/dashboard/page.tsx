@@ -1,7 +1,6 @@
 import React from 'react';
 import { DollarSign, Package, Users, ShoppingCart } from 'lucide-react';
-import Link from 'next/link';
-import InventoryChart from '@/Components/admin/InventoryChart'; // Assuming you added this component
+import InventoryChart from '@/Components/admin/InventoryChart'; 
 import FinanceChart from '@/Components/admin/FinanceChart'; 
 import CountChart from '@/Components/admin/CountChart';
 

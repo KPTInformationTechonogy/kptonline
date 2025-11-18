@@ -20,7 +20,6 @@ class InquiryBase(BaseModel):
     message: Optional[str] = None
     product_name: str
     product_price: str
-    product_id: Optional[int] = None
 
     @validator('name')
     def name_not_empty(cls, v):
@@ -63,7 +62,6 @@ class InquiryInDB(BaseModel):
     message: Optional[str]
     product_name: str
     product_price: str
-    product_id: Optional[int]
     status: InquiryStatus
     created_at: datetime
     updated_at: Optional[datetime]

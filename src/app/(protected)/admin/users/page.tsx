@@ -4,7 +4,31 @@ import React, { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { UserInDB, UserCreate, UserUpdate } from '@/types/user';
 
-const initialFormState = {
+// Define proper error types
+interface ApiError extends Error {
+response?: {
+    data?: {
+    detail?: string;
+    };
+};
+}
+
+function isApiError(error: unknown): error is ApiError {
+return error instanceof Error && typeof error === 'object' && error !== null;
+}
+
+// Define the role type based on your user types
+type UserRole = 'admin' | 'distributor' | 'customer' | 'sales_representative';
+
+interface FormState {
+email: string;
+full_name: string;
+role: UserRole | '';
+is_active: boolean;
+password: string;
+}
+
+const initialFormState: FormState = {
 email: '',
 full_name: '',
 role: '',
@@ -12,7 +36,7 @@ is_active: true,
 password: '',
 };
 
-const ROLE_OPTIONS = [
+const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
 { value: 'admin', label: 'Admin' },
 { value: 'distributor', label: 'Distributor' },
 { value: 'sales_representative', label: 'Sales Representative' },
@@ -24,7 +48,7 @@ const [users, setUsers] = useState<UserInDB[]>([]);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState<string | null>(null);
 const [showForm, setShowForm] = useState(false);
-const [formState, setFormState] = useState(initialFormState);
+const [formState, setFormState] = useState<FormState>(initialFormState);
 const [editingId, setEditingId] = useState<number | null>(null);
 const [formLoading, setFormLoading] = useState(false);
 const [formError, setFormError] = useState<string | null>(null);
@@ -36,8 +60,12 @@ const fetchUsers = async () => {
     try {
     const response = await api.get('/admin/users');
     setUsers(response.data);
-    } catch (err: any) {
-    setError(err?.response?.data?.detail || 'Failed to load users.');
+    } catch (err: unknown) {
+    if (isApiError(err)) {
+        setError(err?.response?.data?.detail || 'Failed to load users.');
+    } else {
+        setError('Failed to load users.');
+    }
     } finally {
     setLoading(false);
     }
@@ -70,6 +98,7 @@ const openEditForm = (user: UserInDB) => {
 const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
+    
     setFormState(prev => ({
     ...prev,
     [name]: type === 'checkbox' ? checked : value,
@@ -82,10 +111,17 @@ const handleFormSubmit = async (e: React.FormEvent) => {
     setFormError(null);
     setSuccessMsg(null);
 
+    // Validate role is selected
+    if (!formState.role) {
+    setFormError('Please select a role');
+    setFormLoading(false);
+    return;
+    }
+
     const payload: UserCreate | UserUpdate = {
     email: formState.email.trim(),
     full_name: formState.full_name.trim(),
-    role: formState.role,
+    role: formState.role as UserRole, // Type assertion since we validated it's not empty
     is_active: formState.is_active,
     };
 
@@ -105,8 +141,12 @@ const handleFormSubmit = async (e: React.FormEvent) => {
     setEditingId(null);
     setFormState(initialFormState);
     fetchUsers();
-    } catch (err: any) {
-    setFormError(err?.response?.data?.detail || 'An error occurred while saving. Please try again.');
+    } catch (err: unknown) {
+    if (isApiError(err)) {
+        setFormError(err?.response?.data?.detail || 'An error occurred while saving. Please try again.');
+    } else {
+        setFormError('An error occurred while saving. Please try again.');
+    }
     } finally {
     setFormLoading(false);
     }
@@ -120,8 +160,12 @@ const handleDeleteUser = async (userId: number) => {
     await api.delete(`/admin/users/${userId}`);
     setSuccessMsg('User deleted successfully');
     fetchUsers();
-    } catch (err: any) {
-    setError(err?.response?.data?.detail || 'An error occurred while deleting. Please try again.');
+    } catch (err: unknown) {
+    if (isApiError(err)) {
+        setError(err?.response?.data?.detail || 'An error occurred while deleting. Please try again.');
+    } else {
+        setError('An error occurred while deleting. Please try again.');
+    }
     setLoading(false);
     }
 };

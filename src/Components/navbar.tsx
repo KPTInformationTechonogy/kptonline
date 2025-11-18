@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Logo from "@/images/kpt_logo.jpeg";
 import menuIcon from "@/images/menu.png";
+import closeIcon from "@/images/close.png";
 
 const Navbar = () => {
 const { user, logout, hasRole } = useAuth();
@@ -20,16 +21,24 @@ const mobileMenuRef = useRef<HTMLDivElement>(null);
 const handleLogout = () => {
     logout();
     setMobileMenuOpen(false);
+    setDropdownOpen(false);
+};
+
+const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+};
+
+const handleMobileNavigation = (path: string) => {
+    router.push(path);
+    closeMobileMenu();
 };
 
 // Close dropdowns when clicking outside
 useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-    // Close profile dropdown
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
     }
-    // Close mobile menu
     if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
         setMobileMenuOpen(false);
     }
@@ -41,67 +50,122 @@ useEffect(() => {
 
 // Close mobile menu on route change
 useEffect(() => {
-    const handleRouteChange = () => setMobileMenuOpen(false);
+    const handleRouteChange = () => {
+    closeMobileMenu();
+    };
+
     window.addEventListener('popstate', handleRouteChange);
-    return () => window.removeEventListener('popstate', handleRouteChange);
+    return () => {
+    window.removeEventListener('popstate', handleRouteChange);
+    };
 }, []);
 
 return (
-    <header className="sticky w-full top-0 z-50 h-16 sm:h-20 bg-yellow-800 shadow-lg">
-    <div className="flex items-center justify-between px-3 sm:px-6 md:px-8 lg:px-16 xl:px-32 h-full">
-        {/* Logo and Company Name */}
-        <div className="flex items-center gap-2 sm:gap-4">
-        <Link href="/" className="flex items-center gap-2 sm:gap-4">
+    <header className="sticky w-full top-0 z-50 h-16 bg-white shadow-lg border-b border-gray-200">
+    <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-full max-w-7xl mx-auto">
+        {/* Logo and Brand */}
+        <div className="flex items-center gap-3">
+        <Link 
+            href="/" 
+            className="flex items-center gap-3 transition-opacity hover:opacity-90"
+            onClick={() => setMobileMenuOpen(false)}
+        >
             <Image 
             src={Logo} 
             alt="Kano Process Trading Company Logo" 
-            width={40} 
-            height={40} 
-            className="rounded-md ring-2 ring-white sm:w-12 sm:h-12"
+            width={48}
+            height={48}
+            className="rounded-lg object-cover"
+            priority
             />
-            <h1 className="hidden sm:block text-sm md:text-lg font-bold text-white font-sans tracking-wide">
-            Kano Process Trading Company
+            <div className="hidden sm:block">
+            <h1 className="text-lg font-bold text-gray-900 font-sans tracking-tight">
+                Kano Process Trading
             </h1>
+            <p className="text-xs text-gray-600 font-normal">Company Limited</p>
+            </div>
         </Link>
         </div>
 
-        {/* Desktop Navigation Links - Hidden on mobile */}
+        {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-8">
-        <div className="flex items-center gap-6 lg:gap-8 text-white font-sans font-semibold text-sm">
-            <Link href="/" className="hover:text-yellow-200 transition-colors duration-200 py-2">Home</Link>
-            <Link href="/services" className="hover:text-yellow-200 transition-colors duration-200 py-2">Services</Link>
-            <Link href="/products" className="hover:text-yellow-200 transition-colors duration-200 py-2">Products</Link>
-            <Link href="/about" className="hover:text-yellow-200 transition-colors duration-200 py-2">About</Link>
-            <Link href="/contact" className="hover:text-yellow-200 transition-colors duration-200 py-2">Contact</Link>
+        <div className="flex items-center gap-8 text-gray-700 font-medium text-sm">
+            <Link 
+            href="/" 
+            className="hover:text-yellow-700 transition-colors duration-200 py-2 relative group"
+            >
+            Home
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-700 transition-all group-hover:w-full"></span>
+            </Link>
+            <Link 
+            href="/services" 
+            className="hover:text-yellow-700 transition-colors duration-200 py-2 relative group"
+            >
+            Services
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-700 transition-all group-hover:w-full"></span>
+            </Link>
+            <Link 
+            href="/products" 
+            className="hover:text-yellow-700 transition-colors duration-200 py-2 relative group"
+            >
+            Products
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-700 transition-all group-hover:w-full"></span>
+            </Link>
+            <Link 
+            href="/about" 
+            className="hover:text-yellow-700 transition-colors duration-200 py-2 relative group"
+            >
+            About
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-700 transition-all group-hover:w-full"></span>
+            </Link>
+            <Link 
+            href="/contact" 
+            className="hover:text-yellow-700 transition-colors duration-200 py-2 relative group"
+            >
+            Contact
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-700 transition-all group-hover:w-full"></span>
+            </Link>
         </div>
         </nav>
 
-        {/* User Actions and Auth Section */}
-        <div className="flex items-center gap-2 sm:gap-4" ref={mobileMenuRef}>
+        {/* Desktop User Actions */}
+        <div className="flex items-center gap-4">
         {user ? (
             <>
-            {/* Customer-specific features - Hidden on small mobile */}
+            {/* Customer Cart */}
             {hasRole(['customer']) && (
-                <Link href="/customer/cart" className="hidden sm:block">
-                <button className="px-3 py-1 sm:px-4 sm:py-2 rounded-md bg-yellow-700 hover:bg-yellow-600 transition-colors duration-200 text-white text-sm sm:text-base">
-                    Cart
+                <Link href="/customer/cart" className="hidden sm:block relative">
+                <button className="p-2 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors duration-200 text-yellow-700 border border-yellow-200">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
                 </button>
                 </Link>
             )}
 
-            {/* Profile Avatar and Dropdown - Hidden on mobile when menu is available */}
+            {/* User Dropdown */}
             <div className="hidden lg:block relative" ref={dropdownRef}>
                 <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-yellow-700 hover:bg-yellow-600 flex items-center justify-center border-2 border-white transition-colors duration-200"
+                className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 border border-transparent hover:border-gray-200"
                 >
-                <span className="text-white font-medium text-sm sm:text-lg">
+                <div className="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center">
+                    <span className="text-white font-medium text-sm">
                     {user.email.charAt(0).toUpperCase()}
-                </span>
+                    </span>
+                </div>
+                <svg 
+                    className={`w-4 h-4 text-gray-600 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
                 </button>
 
                 {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 sm:w-64 origin-top-right bg-white rounded-lg shadow-xl py-2 ring-1 ring-black ring-opacity-5 z-50 border border-gray-200">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
                     {/* User Info */}
                     <div className="px-4 py-3 border-b border-gray-100">
                     <p className="text-sm font-semibold text-gray-900 truncate">
@@ -115,216 +179,206 @@ return (
                     </div>
                     
                     {/* Navigation Links */}
+                    <div className="py-1">
                     <button
-                    onClick={() => {
+                        onClick={() => {
                         router.push('/dashboard');
                         setDropdownOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-yellow-50 transition-colors duration-150"
+                        }}
+                        className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 transition-colors duration-150"
                     >
-                    Dashboard
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Dashboard
                     </button>
                     
                     {hasRole(['customer']) && (
-                    <button
+                        <button
                         onClick={() => {
-                        router.push('/customer/profile');
-                        setDropdownOpen(false);
+                            router.push('/customer/profile');
+                            setDropdownOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-yellow-50 transition-colors duration-150"
-                    >
+                        className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 transition-colors duration-150"
+                        >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
                         Profile
-                    </button>
+                        </button>
                     )}
+                    </div>
                     
                     {/* Logout */}
+                    <div className="pt-1 border-t border-gray-100">
                     <button
-                    onClick={() => {
-                        handleLogout();
-                        setDropdownOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150 border-t border-gray-100 mt-1"
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
                     >
-                    Log out
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Log out
                     </button>
+                    </div>
                 </div>
                 )}
             </div>
             </>
         ) : (
-            /* Login/Register Buttons - Hidden on mobile */
-            <div className="hidden sm:flex items-center gap-2 md:gap-3">
+            /* Auth Buttons */
+            <div className="hidden lg:flex items-center gap-3">
             <Link href="/login">
-                <button className="px-3 py-1 md:px-4 md:py-2 bg-white text-yellow-800 rounded-md hover:bg-gray-100 transition-colors duration-200 font-semibold border border-yellow-800 text-sm md:text-base">
+                <button className="px-4 py-2 text-gray-700 hover:text-yellow-700 transition-colors duration-200 font-medium text-sm">
                 Login
                 </button>
             </Link>
             <Link href="/register">
-                <button className="px-3 py-1 md:px-4 md:py-2 bg-yellow-700 text-white rounded-md hover:bg-yellow-600 transition-colors duration-200 font-semibold border border-yellow-700 text-sm md:text-base">
+                <button className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200 font-medium text-sm shadow-sm">
                 Register
                 </button>
             </Link>
             </div>
         )}
 
-        {/* Mobile Menu Button - Visible on tablets and mobile */}
-        <div className="lg:hidden">
+        {/* Mobile Menu Button */}
+        <div className="lg:hidden" ref={mobileMenuRef}>
             <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`p-2 rounded-md transition-colors duration-200 ${
-                mobileMenuOpen ? 'bg-yellow-700' : 'bg-transparent hover:bg-yellow-700'
+            className={`p-2 rounded-lg transition-colors duration-200 ${
+                mobileMenuOpen ? 'bg-yellow-50 text-yellow-700' : 'text-gray-600 hover:bg-gray-100'
             }`}
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
             >
             <Image 
-                src={menuIcon} 
-                width={20} 
-                height={20} 
-                alt="menu" 
-                className="filter invert sm:w-6 sm:h-6"
+                src={mobileMenuOpen ? closeIcon : menuIcon} 
+                width={24} 
+                height={24} 
+                alt="menu"
+                className={`transition-opacity ${mobileMenuOpen ? 'opacity-70' : ''}`}
             />
             </button>
         </div>
         </div>
     </div>
 
-    {/* Mobile Menu Dropdown */}
-    {mobileMenuOpen && (
-        <div className="lg:hidden absolute top-16 left-0 right-0 bg-white shadow-xl border-t border-yellow-200 z-40">
-        <div className="py-4 px-6">
-            {/* User Info Section for Mobile */}
-            {user ? (
-            <div className="pb-4 mb-4 border-b border-gray-100">
-                <div className="flex items-center gap-3 mb-3">
-                <div className="h-10 w-10 rounded-full bg-yellow-700 flex items-center justify-center">
-                    <span className="text-white font-medium text-sm">
+    {/* Mobile Menu */}
+    <div 
+        className={`lg:hidden fixed top-0 left-0 right-0 h-full bg-white z-40 transform transition-transform duration-300 ease-in-out ${
+        mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+    >
+        <div className="pt-20 pb-8 px-6 h-full flex flex-col">
+        {/* User Info Section */}
+        {user ? (
+            <div className="pb-6 mb-6 border-b border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-yellow-600 flex items-center justify-center">
+                <span className="text-white font-medium text-lg">
                     {user.email.charAt(0).toUpperCase()}
-                    </span>
+                </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">
+                <p className="text-base font-semibold text-gray-900 truncate">
                     {user.email}
-                    </p>
-                    <p className="text-xs text-gray-500">
+                </p>
+                <p className="text-sm text-gray-500">
                     {user.roles
-                        .map((role: string) => role.charAt(0).toUpperCase() + role.slice(1))
-                        .join(', ')}
-                    </p>
+                    .map((role: string) => role.charAt(0).toUpperCase() + role.slice(1))
+                    .join(', ')}
+                </p>
                 </div>
-                </div>
-                
-                {/* User Actions for Mobile */}
-                <div className="space-y-2">
+            </div>
+            
+            {/* User Actions */}
+            <div className="grid grid-cols-2 gap-2">
                 <button
-                    onClick={() => {
-                    router.push('/dashboard');
-                    setMobileMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-yellow-50 rounded-md transition-colors"
+                onClick={() => handleMobileNavigation('/dashboard')}
+                className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-700 bg-gray-50 rounded-lg transition-colors font-medium"
                 >
-                    Dashboard
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Dashboard
                 </button>
                 {hasRole(['customer']) && (
-                    <>
+                <>
                     <button
-                        onClick={() => {
-                        router.push('/customer/profile');
-                        setMobileMenuOpen(false);
-                        }}
-                        className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-yellow-50 rounded-md transition-colors"
+                    onClick={() => handleMobileNavigation('/customer/profile')}
+                    className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-700 bg-gray-50 rounded-lg transition-colors font-medium"
                     >
-                        Profile
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Profile
                     </button>
-                    <Link 
-                        href="/customer/cart" 
-                        className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-yellow-50 rounded-md transition-colors"
-                        onClick={() => setMobileMenuOpen(false)}
+                    <button
+                    onClick={() => handleMobileNavigation('/customer/cart')}
+                    className="flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-700 bg-gray-50 rounded-lg transition-colors font-medium col-span-2"
                     >
-                        Cart
-                    </Link>
-                    </>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    View Cart
+                    </button>
+                </>
                 )}
-                </div>
             </div>
-            ) : (
-            <div className="pb-4 mb-4 border-b border-gray-100 space-y-2">
-                <Link 
-                href="/login" 
-                className="block max-w-8/12 text-center px-4 py-2 bg-yellow-700 text-white rounded-md hover:bg-yellow-600 transition-colors font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-                >
+            </div>
+        ) : (
+            <div className="pb-6 mb-6 border-b border-gray-200 space-y-3">
+            <button
+                onClick={() => handleMobileNavigation('/login')}
+                className="block w-full px-4 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium text-center"
+            >
                 Login
-                </Link>
-                <Link 
-                href="/register" 
-                className="block w-full text-center px-4 py-2 border border-yellow-700 text-yellow-700 rounded-md hover:bg-yellow-50 transition-colors font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-                >
+            </button>
+            <button
+                onClick={() => handleMobileNavigation('/register')}
+                className="block w-full px-4 py-3 border-2 border-yellow-600 text-yellow-600 rounded-lg hover:bg-yellow-50 transition-colors font-medium text-center"
+            >
                 Register
-                </Link>
+            </button>
             </div>
-            )}
+        )}
 
-            {/* Mobile Navigation Links */}
-            <nav className="space-y-1">
-            <Link 
-                href="/" 
-                className="block px-3 py-3 text-gray-700 hover:bg-yellow-50 rounded-md transition-colors font-medium border-l-4 border-transparent hover:border-yellow-600"
-                onClick={() => setMobileMenuOpen(false)}
+        {/* Mobile Navigation Links */}
+        <nav className="space-y-1 flex-1">
+            {['Home', 'Services', 'Products', 'About', 'Contact'].map((item) => (
+            <button
+                key={item}
+                onClick={() => handleMobileNavigation(`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`)}
+                className="flex items-center gap-3 w-full text-left px-4 py-4 text-gray-700 hover:bg-yellow-50 rounded-lg transition-colors font-semibold text-base border-l-4 border-transparent hover:border-yellow-600 hover:text-yellow-800 group"
             >
-                Home
-            </Link>
-            <Link 
-                href="/services" 
-                className="block px-3 py-3 text-gray-700 hover:bg-yellow-50 rounded-md transition-colors font-medium border-l-4 border-transparent hover:border-yellow-600"
-                onClick={() => setMobileMenuOpen(false)}
-            >
-                Services
-            </Link>
-            <Link 
-                href="/products" 
-                className="block px-3 py-3 text-gray-700 hover:bg-yellow-50 rounded-md transition-colors font-medium border-l-4 border-transparent hover:border-yellow-600"
-                onClick={() => setMobileMenuOpen(false)}
-            >
-                Products
-            </Link>
-            <Link 
-                href="/about" 
-                className="block px-3 py-3 text-gray-700 hover:bg-yellow-50 rounded-md transition-colors font-medium border-l-4 border-transparent hover:border-yellow-600"
-                onClick={() => setMobileMenuOpen(false)}
-            >
-                About
-            </Link>
-            <Link 
-                href="/contact" 
-                className="block px-3 py-3 text-gray-700 hover:bg-yellow-50 rounded-md transition-colors font-medium border-l-4 border-transparent hover:border-yellow-600"
-                onClick={() => setMobileMenuOpen(false)}
-            >
-                Contact
-            </Link>
-            </nav>
+                <div className="w-2 h-2 bg-yellow-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                {item}
+            </button>
+            ))}
+        </nav>
 
-            {/* Logout for authenticated users in mobile */}
-            {user && (
-            <div className="pt-4 mt-4 border-t border-gray-100">
-                <button
+        {/* Logout for authenticated users */}
+        {user && (
+            <div className="pt-6 mt-6 border-t border-gray-200">
+            <button
                 onClick={handleLogout}
-                className="block w-full text-left px-3 py-3 text-red-600 hover:bg-red-50 rounded-md transition-colors font-medium border-l-4 border-transparent hover:border-red-600"
-                >
+                className="flex items-center justify-center gap-2 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium border-2 border-red-600 hover:border-red-700"
+            >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
                 Log out
-                </button>
+            </button>
             </div>
-            )}
+        )}
         </div>
-        </div>
-    )}
+    </div>
 
     {/* Backdrop for mobile menu */}
     {mobileMenuOpen && (
         <div 
-        className="lg:hidden fixed inset-0 bg-transparent bg-opacity-50 z-10"
-        onClick={() => setMobileMenuOpen(false)}
+        className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity duration-300"
+        onClick={closeMobileMenu}
         />
     )}
     </header>

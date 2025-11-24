@@ -9,8 +9,8 @@ import Footer from "@/Components/footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "E-commerce Frontend",
-  description: "A modern e-commerce application built with Next.js and FastAPI",
+  title: "Kano Process Trading Company Limited",
+  description: "Kano Process Trading Company Limited is a leading provider of high-quality Furniture accessories, Plumbing materials, Building materials & Home Improvement Services",
 };
 
 export default function RootLayout({
